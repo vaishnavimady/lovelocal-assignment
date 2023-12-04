@@ -1,43 +1,26 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-void reverseString(char* str, int start, int end) {
-    while (start < end) {
-        char temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
-        start++;
-        end--;
-    }
-}
+int countDigitOne(int n) {
+    int count = 0;
 
-char* shortestPalindrome(char* s) {
-    int n = strlen(s), i = 0, j = n - 1;
+    // Loop through each digit place (ones, tens, hundreds, etc.)
+    for (long long i = 1; i <= n; i *= 10) {
+        long long divider = i * 10;
 
-    while (j >= 0) {
-        if (s[i] == s[j]) {
-            i++;
-        }
-        j--;
+        // Calculate count of 1s contributed by the current digit place
+        count += (n / divider) * i + fmin(fmax(n % divider - i + 1, 0), i);
+        // Explanation:
+        // (n / divider) * i counts 1s contributed by higher digits
+        // fmin(fmax(n % divider - i + 1, 0), i) counts 1s at the current digit place
+        // fmax(n % divider - i + 1, 0) ensures that if the difference is negative, it's considered 0
     }
 
-    if (i == n) {
-        return s;
-    }
-
-    reverseString(s, i, n - 1);
-
-    char* result = (char*)malloc(sizeof(char) * (2 * n - i + 1));
-    strcpy(result, s + i);
-    strncat(result, s, i);
-    return result;
+    return count; // Return the total count of digit 1 in the range from 0 to n
 }
 
 int main() {
-    char input[] = "aacecaaa";
-    char* result = shortestPalindrome(input);
-    printf("Shortest palindrome: %s\n", result);
-    free(result);
+    int n = 13; // Example input value
+    int result = countDigitOne(n); // Calculate the count of digit 1
+    printf("Total number of digit 1 from 0 to %d is %d\n", n, result); // Print the result
     return 0;
 }
